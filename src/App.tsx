@@ -1,5 +1,5 @@
 import React from 'react';
-import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, MeshBasicMaterial, Mesh, TextureLoader, MeshLambertMaterial, PlaneGeometry, Texture, VideoTexture, LinearFilter, RGBFormat, ShaderMaterial, Vector2 } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, MeshBasicMaterial, Mesh, TextureLoader, MeshLambertMaterial, PlaneGeometry, Texture, VideoTexture, LinearFilter, RGBFormat, ShaderMaterial, Vector2, ClampToEdgeWrapping } from 'three';
 import './App.css';
 import 'tracking';
 import data from './data/data.json';
@@ -129,8 +129,8 @@ class App extends React.Component {
     // const videocanvas = document.createElement('canvas');
     // const videocanvasctx = videocanvas.getContext('2d');
 
-    const width = 1024; // video.videoWidth;
-    const height = 512; // video.videoHeight / 2;
+    const width = 1280;// 1024; // video.videoWidth;
+    const height = 1440 / 2;// 512; // video.videoHeight / 2;
     // videocanvas.width = width;
     // videocanvas.height = height;
 
@@ -167,14 +167,20 @@ class App extends React.Component {
     // const texture = new Texture(videocanvas);
 
     const texture = new VideoTexture(video);
-    // texture.minFilter = LinearFilter;
-    // texture.magFilter = LinearFilter;
+    texture.minFilter = LinearFilter;
+    texture.magFilter = LinearFilter;
+    texture.wrapS = ClampToEdgeWrapping;
+    texture.wrapT = ClampToEdgeWrapping;
     // texture.format = RGBFormat;
 
      // remove: for debugging
     const webglcanvas = document.getElementById('canvas') as HTMLCanvasElement; //document.createElement('canvas');
     const webglCtx = webglcanvas.getContext('2d');
     const webglTexture = new Texture(webglcanvas);
+    webglTexture.minFilter = LinearFilter;
+    webglTexture.magFilter = LinearFilter;
+    webglTexture.wrapS = ClampToEdgeWrapping;
+    webglTexture.wrapT = ClampToEdgeWrapping;
 
     // Load an image file into a custom material
     const vshader = `
@@ -253,12 +259,12 @@ void main()
           tempCtx.scale(frame.scale / 100, frame.scale / 100);
           // Move registration point back to the top left corner of canvas
           tempCtx.translate(-frame.position[0], -frame.position[1]);
-          tempCtx.drawImage(img, frame.position[0] - 95.8, frame.position[1] - 288.358, 191.6, 288.358);
+          tempCtx.drawImage(img, frame.position[0] - 100, frame.position[1] - 200, 200, 200);
         }
 
         webglcanvas.width = width;
         webglcanvas.height = height;
-        webglCtx.drawImage(tempCanvas, 0, 0, width, height);
+        webglCtx.drawImage(tempCanvas, 0, 0);
 
         //tell texture object it needs to be updated
         webglTexture.needsUpdate = true;
