@@ -3,7 +3,7 @@ import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, MeshBasicMaterial
 import { OrbitControls } from 'three-orbitcontrols-ts';
 import './App.css';
 import 'tracking';
-import data from './data/final.json';
+import data from './data/shot1.json';
 
 tracking.ColorTracker.registerColor('white', function (r, g, b) {
   if (r === 255 && g === 255 && b === 255) {
@@ -46,7 +46,7 @@ class App extends React.Component {
 
     // Video
     const video = document.createElement("video"); // create a video element
-    video.src = `${assetsPath}final.mp4`;
+    video.src = `${assetsPath}shot1.mp4`;
     // video.loop = true;
     video.muted = true;
     video.preload = "auto";
@@ -203,18 +203,7 @@ class App extends React.Component {
         
         faceCtx.drawImage(imgCanvas, 0, 0);
 
-        const imageData = faceCtx.getImageData(0, 0, canvas.width, canvas.height);
-        const dat = imageData.data;
-        const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-        const tempData = tempImageData.data;
-
-        for (var i = 0; i < dat.length; i += 4) {
-          if (tempData[i] !== 255) {
-            dat[i] = dat[i + 1] = dat[i + 2] = dat[i + 3] = 0;
-          }
-        }
-
-        faceCtx.putImageData(imageData, 0, 0, 0, 0, width, height);
+        context.globalCompositeOperation = "destination-over";
         context.drawImage(faceCanvas, 0, 0);
 
         // nCtx.drawImage(faceCanvas, 0, 0);
@@ -245,16 +234,33 @@ class App extends React.Component {
       // tempCtx.drawImage(video, 0, videoHeight, videoWidth, videoHeight, 0, 0, videoWidth, videoHeight);
       // drawFace(ctx, frameIndex, videoWidth, videoHeight);
 
-      if (frame) {
-        ctx.putImageData(frame, 0, 0, 0, 0, videoWidth, videoHeight);
+      if (frame) {    
+        // ctx.putImageData(frame, 0, 0, 0, 0, videoWidth, videoHeight);   
+        //TODO: fix me
+        let tempCan = document.createElement('canvas');
+        let tempC = tempCan.getContext('2d');
+        tempCan.width = 512;
+        tempCan.height = 512;
+        tempC.putImageData(frame, 0, 0);
+        tempCtx.drawImage(tempCan, 0, videoHeight, videoWidth, videoHeight, 0, 0, videoWidth, videoHeight);
 
+        // Converting matte image into alpha channel
+        const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        const tempData32 = new Uint32Array(tempImageData.data.buffer);
+        let j = 0;
+        const len = tempData32.length;
+        while (j < len) {
+          tempData32[j] = tempData32[j++] << 8;
+        }
+        ctx.putImageData(tempImageData, 0, 0);
+        ctx.globalCompositeOperation = "source-out";
         //TODO: fix me
         let can = document.createElement('canvas');
         let c = can.getContext('2d');
         can.width = 512;
         can.height = 512;
         c.putImageData(frame, 0, 0);
-        tempCtx.drawImage(can, 0, videoHeight, videoWidth, videoHeight, 0, 0, videoWidth, videoHeight);
+        ctx.drawImage(can, 0, 0, videoWidth, videoHeight, 0, 0, videoWidth, videoHeight);
 
         // document.body.appendChild(tempCanvas);
         
