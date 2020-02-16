@@ -3,7 +3,7 @@ import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, MeshBasicMaterial
 import { OrbitControls } from 'three-orbitcontrols-ts';
 import './App.css';
 import 'tracking';
-import data from './data/shot1.json';
+import data from './data/1.json';
 
 tracking.ColorTracker.registerColor('white', function (r, g, b) {
   if (r === 255 && g === 255 && b === 255) {
@@ -48,7 +48,7 @@ class App extends React.Component {
     const video = document.createElement("video"); // create a video element
     video.src = `${assetsPath}shot1.mp4`;
     // video.loop = true;
-    video.muted = true;
+    // video.muted = true;
     video.preload = "auto";
 
     let frameIndex = -1;
@@ -173,29 +173,37 @@ class App extends React.Component {
       const position = data.position;
 
       if (frame) {
-        // Move registration point to the center of the canvas
-        faceCtx.translate(width / 2, height / 2);
+        // // Move registration point to the center of the canvas
+        // faceCtx.translate(width / 2, height / 2);
         
-        // Move the image to correct position
+        // // Move the image to correct position
+        // faceCtx.transform(
+        //   scale / 100,
+        //   rotation * Math.PI / 180,
+        //   -rotation * Math.PI / 180,
+        //   scale / 100,
+        //   position[0] - width / 2, position[1] - height / 2
+        // );
+
+        // // Move the context to center of new rect
+        // faceCtx.translate(-position[0], -position[1]);
+
+        // Move to tracking position
+        faceCtx.transform(
+          frame.scale / 100,
+          ((frame.rotation || 0) * Math.PI / 180),
+          -((frame.rotation || 0) * Math.PI / 180),
+          frame.scale / 100,
+          frame.position[0],
+          frame.position[1]
+        );
+
         faceCtx.transform(
           scale / 100,
           rotation * Math.PI / 180,
           -rotation * Math.PI / 180,
           scale / 100,
-          position[0] - width / 2, position[1] - height / 2
-        );
-
-        // Move the context to center of new rect
-        faceCtx.translate(-position[0], -position[1]);
-
-        // Move to tracking position
-        faceCtx.transform(
-          frame.scale / 100,
-          (frame.rotation * Math.PI / 180),
-          -(frame.rotation * Math.PI / 180),
-          frame.scale / 100,
-          frame.position[0],
-          frame.position[1]
+          position[0], position[1]
         );
 
         // Move registration point back to the top left corner of canvas
