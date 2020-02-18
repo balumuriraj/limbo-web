@@ -2,15 +2,8 @@ import React from 'react';
 import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, MeshBasicMaterial, Mesh, TextureLoader, MeshLambertMaterial, PlaneGeometry, Texture, VideoTexture, LinearFilter, RGBFormat, ShaderMaterial, Vector2, ClampToEdgeWrapping } from 'three';
 import { OrbitControls } from 'three-orbitcontrols-ts';
 import './App.css';
-import 'tracking';
-import data from './data/1.json';
-
-tracking.ColorTracker.registerColor('white', function (r, g, b) {
-  if (r === 255 && g === 255 && b === 255) {
-    return true;
-  }
-  return false;
-});
+import * as lottie from 'lottie-web';
+// import data from './data/1.json';
 
 const assetsPath = `${process.env.PUBLIC_URL}/assets/`;
 const faceCanvas = document.createElement("canvas");
@@ -25,24 +18,24 @@ let tempCtx = tempCanvas.getContext('2d');
 class App extends React.Component {
 
   async componentDidMount() {
+
+    const anim = (lottie as any).loadAnimation({
+      container: document.getElementById('lottie'), // the dom element that will contain the animation
+      renderer: 'canvas',
+      loop: false,
+      autoplay: false,
+      path: `${assetsPath}1.json` // the path to the animation json
+    });
+
+    // console.log(anim);
+
+    anim.addEventListener('data_ready', function(){
+      anim.goToAndStop(25, true);
+      console.log(anim);
+  });
+
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
-
-    const imgCanvas = document.createElement("canvas");
-    const imgCtx = imgCanvas.getContext('2d');
-
-    // Image 
-    const img = new Image();
-    img.onload = drawImg;
-    img.src = `${assetsPath}head.png`;
-
-    function drawImg() {
-      imgCanvas.width = 512;
-      imgCanvas.height = 256;
-
-      const width = (img.naturalWidth / img.naturalHeight) * imgCanvas.height;
-      imgCtx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, imgCanvas.width / 2 - width / 2, 0, width, imgCanvas.height);
-    }
 
     // Video
     const video = document.createElement("video"); // create a video element
@@ -58,28 +51,6 @@ class App extends React.Component {
     const interval = 1000 / fps;
     const tolerance = 0.1;
     let delta;
-
-    // video.addEventListener("play", drawFrame, false);
-
-    // function drawFrame() {
-    //   console.log("playing");
-    //   if (video.paused || video.ended) {
-    //     return;
-    //   }
-
-    //   requestAnimationFrame(drawFrame);
-
-    //   now = Date.now();
-    //   delta = now - then;
-
-    //   if (delta >= interval - tolerance) {
-    //     frameIndex++;
-    //     then = now - (delta % interval);
-
-    //     // drawUsingCanvas();
-    //     // drawUsingWebGL();
-    //   }
-    // }
 
     const frames = await extractFramesFromVideo();
     console.log(frames.length);
@@ -135,7 +106,8 @@ class App extends React.Component {
 
     function drawFrame() {
       if (frameIndex >= frames.length) {
-        return;
+        frameIndex = 0;
+        // return;
       }
 
       requestAnimationFrame(drawFrame);
@@ -146,7 +118,7 @@ class App extends React.Component {
       if (delta >= interval - tolerance) {
         frameIndex++;
         then = now - (delta % interval);
-        console.log("drawing: ", frameIndex);
+        // console.log("drawing: ", frameIndex);
         drawUsingCanvas(frames[frameIndex], frameIndex);
         // drawUsingWebGL();
       }
@@ -154,76 +126,7 @@ class App extends React.Component {
 
     drawFrame();
 
-    // setTimeout(() => video.play(), 1000);
-    // video.play();
-
-    function drawFace(context: CanvasRenderingContext2D, index: number, width: number, height: number) {
-      const nCanvas = document.createElement("canvas");
-      const nCtx = nCanvas.getContext('2d');
-      nCanvas.width = width;
-      nCanvas.height = height;
-      nCtx.putImageData(context.getImageData(0, 0, width, height), 0, 0, 0, 0, width, height);
-
-      faceCanvas.width = width;
-      faceCanvas.height = height;
-
-      const frame = data.frames[index];
-      const scale = data.scale;
-      const rotation = data.rotation;
-      const position = data.position;
-
-      if (frame) {
-        // // Move registration point to the center of the canvas
-        // faceCtx.translate(width / 2, height / 2);
-        
-        // // Move the image to correct position
-        // faceCtx.transform(
-        //   scale / 100,
-        //   rotation * Math.PI / 180,
-        //   -rotation * Math.PI / 180,
-        //   scale / 100,
-        //   position[0] - width / 2, position[1] - height / 2
-        // );
-
-        // // Move the context to center of new rect
-        // faceCtx.translate(-position[0], -position[1]);
-
-        // Move to tracking position
-        faceCtx.transform(
-          frame.scale / 100,
-          ((frame.rotation || 0) * Math.PI / 180),
-          -((frame.rotation || 0) * Math.PI / 180),
-          frame.scale / 100,
-          frame.position[0],
-          frame.position[1]
-        );
-
-        faceCtx.transform(
-          scale / 100,
-          rotation * Math.PI / 180,
-          -rotation * Math.PI / 180,
-          scale / 100,
-          position[0], position[1]
-        );
-
-        // Move registration point back to the top left corner of canvas
-        faceCtx.translate(-width / 2, -height / 2);
-        
-        faceCtx.drawImage(imgCanvas, 0, 0);
-
-        context.globalCompositeOperation = "destination-over";
-        context.drawImage(faceCanvas, 0, 0);
-
-        // nCtx.drawImage(faceCanvas, 0, 0);
-        // document.body.appendChild(nCanvas);
-      }
-    }
-
     function drawUsingCanvas(frame: ImageData, index: number) {
-      // if (!video.videoWidth) {
-      //   return;
-      // }
-
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight / 2;
       canvas.width = videoWidth;
@@ -231,19 +134,7 @@ class App extends React.Component {
       tempCanvas.width = videoWidth;
       tempCanvas.height = videoHeight;
 
-      // if (video.paused || video.ended) {
-      //   // console.log("count: ", frameIndex);
-      //   // frameIndex = 0;
-      //   // video.play();
-      //   return;
-      // }
-
-      // ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, videoWidth, videoHeight);
-      // tempCtx.drawImage(video, 0, videoHeight, videoWidth, videoHeight, 0, 0, videoWidth, videoHeight);
-      // drawFace(ctx, frameIndex, videoWidth, videoHeight);
-
-      if (frame) {    
-        // ctx.putImageData(frame, 0, 0, 0, 0, videoWidth, videoHeight);   
+      if (frame) {      
         //TODO: fix me
         let tempCan = document.createElement('canvas');
         let tempC = tempCan.getContext('2d');
@@ -270,9 +161,9 @@ class App extends React.Component {
         c.putImageData(frame, 0, 0);
         ctx.drawImage(can, 0, 0, videoWidth, videoHeight, 0, 0, videoWidth, videoHeight);
 
-        // document.body.appendChild(tempCanvas);
-        
-        drawFace(ctx, index, videoWidth, videoHeight);        
+        anim.goToAndStop(index, true);
+        ctx.globalCompositeOperation = "destination-over";
+        ctx.drawImage(anim.container, 0, 0, videoWidth, videoHeight);
       }
     }
 
@@ -427,17 +318,17 @@ void main()
         tempCanvas.height = videoHeight;
         tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-        const frame = data.frames[frameIndex];
+        // const frame = data.frames[frameIndex];
 
-        if (frame) {
-          // Move registration point to the center of the canvas
-          tempCtx.translate(frame.position[0], frame.position[1]);
-          tempCtx.rotate(frame.rotation * Math.PI / 180);// angle must be in radians
-          tempCtx.scale(frame.scale / 100, frame.scale / 100);
-          // Move registration point back to the top left corner of canvas
-          tempCtx.translate(-frame.position[0], -frame.position[1]);
-          tempCtx.drawImage(img, frame.position[0] - 100, frame.position[1] - 150, 200, 300);
-        }
+        // if (frame) {
+        //   // Move registration point to the center of the canvas
+        //   tempCtx.translate(frame.position[0], frame.position[1]);
+        //   tempCtx.rotate(frame.rotation * Math.PI / 180);// angle must be in radians
+        //   tempCtx.scale(frame.scale / 100, frame.scale / 100);
+        //   // Move registration point back to the top left corner of canvas
+        //   tempCtx.translate(-frame.position[0], -frame.position[1]);
+        //   // tempCtx.drawImage(img, frame.position[0] - 100, frame.position[1] - 150, 200, 300);
+        // }
 
         webglcanvas.width = videoWidth;
         webglcanvas.height = videoHeight;
@@ -457,6 +348,7 @@ void main()
   render() {
     return (
       <div className="App">
+        <div id="lottie" style={{width: 512, height: 256}}></div>
         <p>WebGL implementation: </p>
         <div id="three"></div>
         <div>
