@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import { loadAnimation } from "./utils/canvasUtils"
-import { drawFrames } from "./utils/frameUtils"
+import { drawCanvasFrames, drawWebGLFrames } from "./utils/frameUtils"
 import { createVideo } from './utils/videoUtils';
 
 const assetsPath = `${process.env.PUBLIC_URL}/assets/`;
@@ -18,7 +18,8 @@ class App extends React.Component {
     const outCanvas = document.getElementById('canvas') as HTMLCanvasElement;
     const video = createVideo(videoPath);
     const anim = loadAnimation(animPath);
-    drawFrames(outCanvas, video, anim);
+    drawCanvasFrames(outCanvas, video, anim);
+    drawWebGLFrames(video, anim);
   }
 
   render() {

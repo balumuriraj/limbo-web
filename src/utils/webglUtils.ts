@@ -1,83 +1,91 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, MeshBasicMaterial, Mesh, TextureLoader, MeshLambertMaterial, PlaneGeometry, Texture, VideoTexture, LinearFilter, RGBFormat, ShaderMaterial, Vector2, ClampToEdgeWrapping } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, Mesh, PlaneGeometry, Texture, LinearFilter, ShaderMaterial, Vector2, ClampToEdgeWrapping } from 'three';
 import { OrbitControls } from 'three-orbitcontrols-ts';
+import { AnimationItem } from 'lottie-web';
 
-let tempCanvas = document.createElement("canvas");
-let tempCtx = tempCanvas.getContext('2d');
+// let tempCanvas = document.createElement("canvas");
+// let tempCtx = tempCanvas.getContext('2d');
 
-function drawWebGL(video: HTMLVideoElement) {
-  //make your video canvas
-    // const videocanvas = document.createElement('canvas');
-    // const videocanvasctx = videocanvas.getContext('2d');
+let renderer: WebGLRenderer = null;
+let texture: Texture = null;
+let maskTexture: Texture = null;
+let animTexture: Texture = null;
+let scene: Scene = null;
+let camera: PerspectiveCamera = null;
+let videoCanvas: HTMLCanvasElement = null;
+let maskCanvas: HTMLCanvasElement = null;
+let animCanvas: HTMLCanvasElement = null;
+let controls: OrbitControls = null;
 
-    const width = 512;// 1024; // video.videoWidth;
-    const height = 512 / 2;// 512; // video.videoHeight / 2;
-    // videocanvas.width = width;
-    // videocanvas.height = height;
+export function initWebGL(video: HTMLVideoElement) {
+  // make your video canvas
+  // const videocanvas = document.createElement('canvas');
+  // const videocanvasctx = videocanvas.getContext('2d');
 
-    //draw a black rectangle so that your spheres don't start out transparent
-    // videocanvasctx.fillStyle = "#000000";
-    // videocanvasctx.fillRect(0, 0, width, height);
+  const width = video.videoWidth;
+  const height = video.videoHeight / 2;
+  // videocanvas.width = width;
+  // videocanvas.height = height;
 
-    // Camera
-    // Specify the portion of the scene visiable at any time (in degrees)
-    const fieldOfView = 75;
+  //draw a black rectangle so that your spheres don't start out transparent
+  // videocanvasctx.fillStyle = "#000000";
+  // videocanvasctx.fillRect(0, 0, width, height);
 
-    // Specify the camera's aspect ratio
-    const aspectRatio = width / height;
+  // Camera
+  // Specify the portion of the scene visiable at any time (in degrees)
+  const fieldOfView = 75;
 
-    // Specify the near and far clipping planes. Only objects
-    // between those planes will be rendered in the scene
-    // (these values help control the number of items rendered
-    // at any given time)
-    const nearPlane = 0.1;
-    const farPlane = 1000;
-    const camera = new PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-    camera.position.z = 12;
+  // Specify the camera's aspect ratio
+  const aspectRatio = width / height;
 
-    // Scene
-    const scene = new Scene();
+  // Specify the near and far clipping planes. Only objects
+  // between those planes will be rendered in the scene
+  // (these values help control the number of items rendered
+  // at any given time)
+  const nearPlane = 1;
+  const farPlane = 10000;
+  camera = new PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
+  camera.position.z = 10;
 
-    // renderer
-    const renderer = new WebGLRenderer({ antialias: true });
-    renderer.setSize(width, height);
-    document.getElementById("three").appendChild(renderer.domElement);
+  // Scene
+  scene = new Scene();
 
-    // const controls = new OrbitControls( camera, renderer.domElement );
-    // controls.update();
+  // renderer
+  renderer = new WebGLRenderer({ antialias: true });
+  renderer.setSize(width, height);
+  document.getElementById("three").appendChild(renderer.domElement);
 
-    // image
-    //add canvas to new texture
-    // const texture = new Texture(videocanvas);
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.update();
 
-    // const texture = new VideoTexture(video);
-    const videoCanvas = document.createElement("canvas");
-    const videoCtx = videoCanvas.getContext('2d');
-    const texture = new Texture(videoCanvas);
-    texture.minFilter = LinearFilter;
-    texture.magFilter = LinearFilter;
-    texture.wrapS = ClampToEdgeWrapping;
-    texture.wrapT = ClampToEdgeWrapping;
-    // texture.format = RGBFormat;
+  // image
+  // add canvas to new texture
+  // const texture = new Texture(videocanvas);
 
-    const maskCanvas = document.createElement("canvas");
-    const maskCtx = maskCanvas.getContext('2d');
-    const maskTexture = new Texture(maskCanvas);
-    maskTexture.minFilter = LinearFilter;
-    maskTexture.magFilter = LinearFilter;
-    maskTexture.wrapS = ClampToEdgeWrapping;
-    maskTexture.wrapT = ClampToEdgeWrapping;
+  // const texture = new VideoTexture(video);
+  videoCanvas = document.createElement("canvas");
+  texture = new Texture(videoCanvas);
+  texture.minFilter = LinearFilter;
+  texture.magFilter = LinearFilter;
+  texture.wrapS = ClampToEdgeWrapping;
+  texture.wrapT = ClampToEdgeWrapping;
+  // texture.format = RGBFormat;
 
-    // remove: for debugging
-    const webglcanvas = document.getElementById('canvas') as HTMLCanvasElement; //document.createElement('canvas');
-    const webglCtx = webglcanvas.getContext('2d');
-    const webglTexture = new Texture(webglcanvas);
-    webglTexture.minFilter = LinearFilter;
-    webglTexture.magFilter = LinearFilter;
-    webglTexture.wrapS = ClampToEdgeWrapping;
-    webglTexture.wrapT = ClampToEdgeWrapping;
+  maskCanvas = document.createElement("canvas");
+  maskTexture = new Texture(maskCanvas);
+  maskTexture.minFilter = LinearFilter;
+  maskTexture.magFilter = LinearFilter;
+  maskTexture.wrapS = ClampToEdgeWrapping;
+  maskTexture.wrapT = ClampToEdgeWrapping;
 
-    // Load an image file into a custom material
-    const vshader = `
+  animCanvas = document.createElement("canvas");
+  animTexture = new Texture(animCanvas);
+  animTexture.minFilter = LinearFilter;
+  animTexture.magFilter = LinearFilter;
+  animTexture.wrapS = ClampToEdgeWrapping;
+  animTexture.wrapT = ClampToEdgeWrapping;
+
+  // Load an image file into a custom material
+  const vshader = `
 varying vec2 vUv;
 
 void main() {
@@ -86,99 +94,96 @@ void main() {
   gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 }
 `
-    const fshader = `
+  const fshader = `
 varying vec2 vUv;
 uniform vec2 uvOffset;
 uniform sampler2D texture;
+uniform sampler2D animTexture;
 uniform sampler2D maskTexture;
-uniform sampler2D webglTexture;
 
 void main()
 {
   vec2 uv = vUv;
-  // float ratio = 1280.0 / 1440.0; //480./204.;
-  // uv.y *= ratio;
-  
-  // uv.y -= (0.5 - (1. / ratio) * 0.5) * ratio;
-  
-  vec4 mask = texture2D(maskTexture, uv);
-  vec4 col1 = texture2D(webglTexture, uv);
+  vec4 col1 = texture2D(animTexture, uv);
   vec4 col2 = texture2D(texture, uv);
+  vec4 mask = texture2D(maskTexture, uv);
 
-  gl_FragColor = step( 0.5, mask.r ) * col1 + ( 1.0 - step( 0.5, mask.r ) ) * col2;
-
-  // vec3 col = col1.rgb * col1.a + col2.rgb * col2.a * (1.0 - col1.a);
+  vec3 col = col1.rgb * col1.a + col2.rgb * col2.a * (1.0 - col1.a);
   
-  // col = mix(col, vec3(0), step(0.5, abs(uv.y - 0.5)));
+  col = mix(col, vec3(0), step(0.5, abs(uv.y - 0.5)));
   
-  // gl_FragColor = vec4(col, 1.);
+  gl_FragColor = vec4(col, 1.);
 }
 `
-    // const material = new MeshBasicMaterial({ map: texture });
-    const uniforms = {
-      texture: { value: texture },
-      webglTexture: { value: webglTexture },
-      maskTexture: { value: maskTexture },
-      uvOffset: { value: new Vector2(0, 0.25) }
-    };
-    const material = new ShaderMaterial({
-      uniforms,
-      vertexShader: vshader,
-      fragmentShader: fshader
-    });
-    const geometry = new PlaneGeometry(16, 17 * 0.9);
-    const mesh = new Mesh(geometry, material);
-    // set the position of the image mesh in the x,y,z dimensions
-    mesh.position.set(0, 0, 0);
-    scene.add(mesh);
+  // const material = new MeshBasicMaterial({ map: texture });
+  const uniforms = {
+    texture: { value: texture },
+    maskTexture: { value: maskTexture },
+    animTexture: { value: animTexture },
+    uvOffset: { value: new Vector2(0, 0.25) }
+  };
+  const material = new ShaderMaterial({
+    uniforms,
+    vertexShader: vshader,
+    fragmentShader: fshader
+  });
+  const geometry = new PlaneGeometry(1, 1);
+  const mesh = new Mesh(geometry, material);
+  // set the position of the image mesh in the x,y,z dimensions
+  mesh.position.set(0, 0, 0);
+  mesh.scale.set(width, height, 1);
+  scene.add(mesh);
 
-    function drawUsingWebGL() {
-      if (video.paused || video.ended) {
-        // console.log("count: ", frameIndex);
-        // frameIndex = 0;
-        // video.play();
-        return;
-      }
+  // fit camera to mesh
+  const dist = camera.position.z - mesh.position.z;
+  camera.fov = 2 * Math.atan(height / (2 * dist)) * (180 / Math.PI);
+  camera.updateProjectionMatrix();
+}
 
-      //check for vid data
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        const videoWidth = video.videoWidth;
-        const videoHeight = video.videoHeight / 2;
-        videoCanvas.width = videoWidth;
-        videoCanvas.height = videoHeight;
-        videoCtx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, videoWidth, videoHeight);
+export function drawUsingWebGL(
+  frame: ImageData,
+  animationCanvas: HTMLCanvasElement,
+  videoWidth: number,
+  videoHeight: number
+) {
+  const width = videoWidth;
+  const height = videoHeight / 2;
 
-        maskCanvas.width = videoWidth;
-        maskCanvas.height = videoHeight;
-        maskCtx.drawImage(video, 0, videoHeight, videoWidth, videoHeight, 0, 0, videoWidth, videoHeight);
+  if (frame) {
+    videoCanvas.width = width;
+    videoCanvas.height = height;
+    const videoCtx = videoCanvas.getContext('2d');
+    //TODO: fix me
+    let can = document.createElement('canvas');
+    let c = can.getContext('2d');
+    can.width = videoWidth;
+    can.height = videoHeight;
+    c.putImageData(frame, 0, 0);
+    videoCtx.drawImage(can, 0, 0, width, height, 0, 0, width, height);
 
-        tempCanvas.width = videoWidth;
-        tempCanvas.height = videoHeight;
-        tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+    maskCanvas.width = width;
+    maskCanvas.height = height;
+    //TODO: fix me
+    const maskCtx = maskCanvas.getContext('2d');
+    let can1 = document.createElement('canvas');
+    let c1 = can1.getContext('2d');
+    can1.width = videoWidth;
+    can1.height = videoHeight;
+    c1.putImageData(frame, 0, 0);
+    maskCtx.drawImage(can1, 0, height, width, height, 0, 0, width, height);
 
-        // const frame = data.frames[frameIndex];
+    
+    animCanvas.width = width;
+    animCanvas.height = height;
+    const animCtx = animCanvas.getContext('2d');
+    animCtx.drawImage(animationCanvas, 0, 0, width, height);
 
-        // if (frame) {
-        //   // Move registration point to the center of the canvas
-        //   tempCtx.translate(frame.position[0], frame.position[1]);
-        //   tempCtx.rotate(frame.rotation * Math.PI / 180);// angle must be in radians
-        //   tempCtx.scale(frame.scale / 100, frame.scale / 100);
-        //   // Move registration point back to the top left corner of canvas
-        //   tempCtx.translate(-frame.position[0], -frame.position[1]);
-        //   // tempCtx.drawImage(img, frame.position[0] - 100, frame.position[1] - 150, 200, 300);
-        // }
+    //tell texture object it needs to be updated
+    texture.needsUpdate = true;
+    maskTexture.needsUpdate = true;
+    animTexture.needsUpdate = true;
+  }
 
-        webglcanvas.width = videoWidth;
-        webglcanvas.height = videoHeight;
-        webglCtx.drawImage(tempCanvas, 0, 0);
-
-        //tell texture object it needs to be updated
-        texture.needsUpdate = true;
-        maskTexture.needsUpdate = true;
-        webglTexture.needsUpdate = true;
-      }
-
-      // controls.update();
-      renderer.render(scene, camera);
-    }
+  controls.update();
+  renderer.render(scene, camera);
 }

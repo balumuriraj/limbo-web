@@ -20,9 +20,8 @@ export function loadAnimation(path: string): AnimationItem {
 
 export function drawUsingCanvas(
   outCanvas: HTMLCanvasElement, 
-  anim: AnimationItem, 
   frame: ImageData, 
-  frameNumber: number,
+  animCanvas: HTMLCanvasElement,
   videoWidth: number,
   videoHeight: number
 ) {
@@ -62,9 +61,8 @@ export function drawUsingCanvas(
     c.putImageData(frame, 0, 0);
     outCtx.drawImage(can, 0, 0, width, height, 0, 0, width, height);
 
-    anim.goToAndStop(frameNumber, true);
     // console.log((anim as any).container);
     outCtx.globalCompositeOperation = "destination-over";
-    outCtx.drawImage((anim as any).container, 0, 0, width, height);
+    outCtx.drawImage(animCanvas, 0, 0, width, height);
   }
 }
