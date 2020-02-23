@@ -90,13 +90,11 @@ varying vec2 vUv;
 
 void main() {
   vUv = uv;
-
   gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 }
 `
   const fshader = `
 varying vec2 vUv;
-uniform vec2 uvOffset;
 uniform sampler2D texture;
 uniform sampler2D animTexture;
 uniform sampler2D maskTexture;
@@ -104,23 +102,18 @@ uniform sampler2D maskTexture;
 void main()
 {
   vec2 uv = vUv;
-  vec4 col1 = texture2D(animTexture, uv);
-  vec4 col2 = texture2D(texture, uv);
+  vec4 anim = texture2D(animTexture, uv);
+  vec4 video = texture2D(texture, uv);
   vec4 mask = texture2D(maskTexture, uv);
 
-  vec3 col = col1.rgb * col1.a + col2.rgb * col2.a * (1.0 - col1.a);
-  
-  col = mix(col, vec3(0), step(0.5, abs(uv.y - 0.5)));
-  
-  gl_FragColor = vec4(col, 1.);
+  gl_FragColor = step( 0.5, mask.r ) * anim + ( 1.0 - step( 0.5, mask.r ) ) * video;
 }
 `
   // const material = new MeshBasicMaterial({ map: texture });
   const uniforms = {
     texture: { value: texture },
     maskTexture: { value: maskTexture },
-    animTexture: { value: animTexture },
-    uvOffset: { value: new Vector2(0, 0.25) }
+    animTexture: { value: animTexture }
   };
   const material = new ShaderMaterial({
     uniforms,
@@ -172,7 +165,7 @@ export function drawUsingWebGL(
     c1.putImageData(frame, 0, 0);
     maskCtx.drawImage(can1, 0, height, width, height, 0, 0, width, height);
 
-    
+
     animCanvas.width = width;
     animCanvas.height = height;
     const animCtx = animCanvas.getContext('2d');
