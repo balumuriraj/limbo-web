@@ -1,6 +1,5 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, Mesh, PlaneGeometry, Texture, LinearFilter, ShaderMaterial, Vector2, ClampToEdgeWrapping } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, Mesh, PlaneGeometry, Texture, LinearFilter, ShaderMaterial, ClampToEdgeWrapping } from 'three';
 import { OrbitControls } from 'three-orbitcontrols-ts';
-import { AnimationItem } from 'lottie-web';
 
 // let tempCanvas = document.createElement("canvas");
 // let tempCtx = tempCanvas.getContext('2d');

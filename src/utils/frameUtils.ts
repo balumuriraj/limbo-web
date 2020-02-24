@@ -1,7 +1,7 @@
 import { drawUsingCanvas } from "./canvasUtils";
 import { AnimationItem } from "lottie-web";
 import { initWebGL, drawUsingWebGL } from "./webglUtils";
-import { getMediaRecorder, downloadBlob } from "./recorderUtils";
+import { getMediaRecorder } from "./recorderUtils";
 
 const fps = 25;
 const interval = 1000 / fps;
@@ -22,6 +22,7 @@ export async function drawCanvasFrames(
   let then = Date.now();
   let delta;
   let mediaRecorder: MediaRecorder;
+  let isPlaying = false;
 
   function drawFrame() {
     if (frameIndex >= videoFrames.length) {
@@ -41,6 +42,11 @@ export async function drawCanvasFrames(
       }
     }
 
+    if (!isPlaying) {
+      isPlaying = true;
+      audio.play();
+    }
+
     now = Date.now();
     delta = now - then;
 
@@ -53,7 +59,6 @@ export async function drawCanvasFrames(
     }
   }
 
-  audio.play();
   drawFrame();
 }
 

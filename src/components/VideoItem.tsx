@@ -57,14 +57,34 @@ class VideoItem extends React.Component<IProps, IState> {
 
   async playPreview() {
     this.setState({ isProcessing: true });    
-    const { canvas, videoFrames, lottieAnimation, audioElement, width, height } = this.state;
+    // The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://goo.gl/7K7WLu
+    let audioElement = this.state.audioElement;
+    let audioStream = this.state.audioStream;
+    if (!audioElement || !audioStream) {
+      const result = createAudio(this.props.videoUrl);
+      audioElement = result.audioElement;
+      audioStream = result.audioStream;
+      this.setState({ audioElement, audioStream });
+    }
+
+    const { canvas, videoFrames, lottieAnimation, width, height } = this.state;
     await drawCanvasFrames(canvas, videoFrames, lottieAnimation, audioElement, width, height);
     this.setState({ isProcessing: false });
   }
 
   async download() {
     this.setState({ isProcessing: true });
-    const { canvas, videoFrames, lottieAnimation, audioElement, audioStream, width, height } = this.state;
+    // The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://goo.gl/7K7WLu
+    let audioElement = this.state.audioElement;
+    let audioStream = this.state.audioStream;
+    if (!audioElement || !audioStream) {
+      const result = createAudio(this.props.videoUrl);
+      audioElement = result.audioElement;
+      audioStream = result.audioStream;
+      this.setState({ audioElement, audioStream });
+    }
+
+    const { canvas, videoFrames, lottieAnimation, width, height } = this.state;
     await drawCanvasFrames(canvas, videoFrames, lottieAnimation, audioElement, width, height, audioStream, true);
     this.setState({ isProcessing: false });
   }
