@@ -1,6 +1,5 @@
 canvas {
-  background-color: #1dd1a1;
-  /* border: 1px solid black; */
-  /* width: 800px;
-  height: 600px; */
+  background-color: #555;
+  width: 512px;
+  height: 256px;
 }

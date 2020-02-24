@@ -16,13 +16,13 @@ let maskCanvas: HTMLCanvasElement = null;
 let animCanvas: HTMLCanvasElement = null;
 let controls: OrbitControls = null;
 
-export function initWebGL(video: HTMLVideoElement) {
+export function initWebGL(videoWidth: number, videoHeight: number) {
   // make your video canvas
   // const videocanvas = document.createElement('canvas');
   // const videocanvasctx = videocanvas.getContext('2d');
 
-  const width = video.videoWidth;
-  const height = video.videoHeight / 2;
+  const width = videoWidth;
+  const height = videoHeight / 2;
   // videocanvas.width = width;
   // videocanvas.height = height;
 

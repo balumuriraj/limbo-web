@@ -5,9 +5,6 @@ let tempCtx = tempCanvas.getContext('2d');
 
 export function loadAnimation(path: string): AnimationItem {
   const container = document.getElementById('lottie') as HTMLCanvasElement || document.createElement("div");
-  // const container = document.createElement("div");
-  // container.style.width = "512px";
-  // container.style.height = "256px";
 
   return lottie.loadAnimation({
     container, // the dom element that will contain the animation
