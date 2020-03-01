@@ -1,0 +1,34 @@
+nav {
+  background: #111;
+  display: flex;
+  justify-content: center;
+
+  ul {
+    flex: 1;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 1000px;
+
+    .title {
+      font-weight: bold;
+      background: #222;
+    }
+
+    li {
+      display: inline-block;     
+      padding: 1em;
+      color: #fff;
+
+      a {
+        padding: 1em;
+        text-decoration: none;
+        color: #fff;
+
+        &:hover {
+          background: rgba($color: #fff, $alpha: 0.1);
+        }
+      }
+    }
+  }
+}

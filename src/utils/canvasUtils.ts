@@ -3,21 +3,35 @@ import lottie, { AnimationItem } from 'lottie-web';
 let tempCanvas = document.createElement("canvas");
 let tempCtx = tempCanvas.getContext('2d');
 
-export function loadAnimation(path: string): AnimationItem {
+export async function loadAnimation(path: string): Promise<AnimationItem> {
   const container = document.getElementById('lottie') as HTMLCanvasElement || document.createElement("div");
 
-  return lottie.loadAnimation({
-    container, // the dom element that will contain the animation
-    renderer: 'canvas',
-    loop: false,
-    autoplay: false,
-    path // the path to the animation json
-  });
+  try {
+    const response = await fetch(path);
+    const data = await response.json();
+    const paths = { file: "p", folder: "u", preserveAspectRatio: "pr" };
+
+    data.assets.forEach((asset: any) => {
+      asset[paths.folder] = "";
+      asset[paths.file] = "https://firebasestorage.googleapis.com/v0/b/funwithlimbo.appspot.com/o/media%2Fimages%2Fhead.png?alt=media&token=bd840652-803c-4016-9e7b-ae730e90b5dc"; // Override image
+      asset["e"] = 1;
+    });
+
+    return lottie.loadAnimation({
+      container, // the dom element that will contain the animation
+      renderer: 'canvas',
+      loop: false,
+      autoplay: false,
+      animationData: data
+    });
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 export function drawUsingCanvas(
-  outCanvas: HTMLCanvasElement, 
-  frame: ImageData, 
+  outCanvas: HTMLCanvasElement,
+  frame: ImageData,
   animCanvas: HTMLCanvasElement,
   videoWidth: number,
   videoHeight: number

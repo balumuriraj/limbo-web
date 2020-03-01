@@ -1,0 +1,33 @@
+.container {
+  .list {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+
+    li {
+      padding: 1em;
+      width: calc(50% - 2em);
+      list-style: none;
+
+      a {
+        text-decoration: none;        
+
+        img {
+          width: 100%;
+        }
+
+        p {
+          margin: 0;
+          color: #111;
+          background: #fff;
+          padding: 1em;
+        }
+
+        &:hover > p {
+          background: #eee;
+        }
+      }
+    }
+  }
+}

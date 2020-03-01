@@ -2,6 +2,7 @@ export function createAudio(videoPath: string) {
   const audioContext = new window.AudioContext();
   const audioElement = document.createElement("audio");
   audioElement.src = videoPath;
+  audioElement.crossOrigin = "anonymous";
 
   // create a stream from our AudioContext
   const dest = audioContext.createMediaStreamDestination();

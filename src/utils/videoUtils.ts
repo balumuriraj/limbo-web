@@ -4,6 +4,7 @@ export function createVideo(videoPath: string) {
   const video = document.createElement("video"); // create a video element
   video.src = videoPath;
   video.preload = "auto";
+  video.crossOrigin = "anonymous";
   
   return video;
 }

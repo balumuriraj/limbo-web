@@ -1,8 +1,8 @@
 import React from 'react';
-import { loadAnimation } from "../utils/canvasUtils"
-import { drawCanvasFrames } from "../utils/frameUtils"
-import { createVideo, extractFramesFromVideo } from '../utils/videoUtils';
-import { createAudio } from '../utils/audioUtils';
+import { loadAnimation } from "../../utils/canvasUtils"
+import { drawCanvasFrames } from "../../utils/frameUtils"
+import { createVideo, extractFramesFromVideo } from '../../utils/videoUtils';
+import { createAudio } from '../../utils/audioUtils';
 import Button from '@material-ui/core/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -44,15 +44,18 @@ class VideoItem extends React.Component<IProps, IState> {
   }
 
   async componentDidMount() {
+    if (!this.props.videoUrl) {
+      return;
+    }
+
     this.setState({ isProcessing: true });
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     const video = createVideo(this.props.videoUrl);
     const videoFrames = await extractFramesFromVideo(video);
-    const lottieAnimation = loadAnimation(this.props.animationUrl);
-    const {audioElement, audioStream} = createAudio(this.props.videoUrl);
+    const lottieAnimation = await loadAnimation(this.props.animationUrl);
     const width = video.videoWidth;
     const height = video.videoHeight;
-    this.setState({ isProcessing: false, canvas, videoFrames, lottieAnimation, audioElement, audioStream, width, height });
+    this.setState({ isProcessing: false, canvas, videoFrames, lottieAnimation, width, height });
   }
 
   async playPreview() {
@@ -94,7 +97,6 @@ class VideoItem extends React.Component<IProps, IState> {
       <div>
         <div id="lottie" style={{ width: 512, height: 256, visibility: "hidden", position: "absolute", left: -99999, bottom: -99999 }}></div>
         <div>
-          <p>Canvas implementation: </p>
           <canvas id="canvas"></canvas>
         </div>
         <div>
