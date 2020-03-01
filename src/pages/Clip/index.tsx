@@ -37,9 +37,11 @@ function Clip() {
 
   return (
     <div className="container">
-      {
-        !loading ? <VideoItem videoUrl={clip.videoUrl} animationUrl={clip.animationUrl} /> : null
-      }
+      <div className="block">
+        {
+          !loading ? <VideoItem videoUrl={clip.videoUrl} animationUrl={clip.animationUrl} /> : null
+        }
+      </div>
     </div>
   );
 }

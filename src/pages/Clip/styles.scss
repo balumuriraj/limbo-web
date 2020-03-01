@@ -1,3 +1,9 @@
 .container {
-  color: #fff;
+  // color: #fff;
+  display: flex;
+  justify-content: center;
+
+  .block {
+    padding: 1em;
+  }
 }
