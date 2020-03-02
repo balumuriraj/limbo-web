@@ -11,6 +11,8 @@ import { AnimationItem } from 'lottie-web';
 interface IProps {
   videoUrl: string;
   animationUrl: string;
+  width: number;
+  height: number;
 }
 
 interface IState {
@@ -95,7 +97,7 @@ class VideoItem extends React.Component<IProps, IState> {
   render() {
     return (
       <div>
-        <div id="lottie" style={{ width: 512, height: 256, visibility: "hidden", position: "absolute", left: -99999, bottom: -99999 }}></div>
+        <div id="lottie" style={{ width: this.props.width, height: this.props.height, visibility: "hidden", position: "absolute", left: -99999, bottom: -99999 }}></div>
         <div>
           <canvas id="canvas"></canvas>
         </div>
