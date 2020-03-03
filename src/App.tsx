@@ -3,6 +3,7 @@ import { Route, Switch, BrowserRouter as Router } from 'react-router-dom';
 import './App.scss';
 import Home from "./pages/Home";
 import Clip from "./pages/Clip";
+import Create from "./pages/Clip/Create";
 import NoMatch from "./pages/NoMatch";
 import Menu from "./components/Menu";
 
@@ -21,8 +22,9 @@ function App() {
           <div className="app-body">
             <Switch>
               <Route path="/" exact> <Home /> </Route>
-              <Route path="/clip" exact> <Clip /> </Route>
-              <Route path="/clip/:id" children={<Clip />} />
+              {/* <Route path="/clip" exact> <Clip /> </Route> */}
+              <Route path="/clip/:id" exact children={<Clip />} />
+              <Route path="/clip/create/:id" exact children={<Create />} />
               <Route path="*"> <NoMatch /> </Route>
             </Switch>
           </div>

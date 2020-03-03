@@ -3,9 +3,7 @@ import lottie, { AnimationItem } from 'lottie-web';
 let tempCanvas = document.createElement("canvas");
 let tempCtx = tempCanvas.getContext('2d');
 
-export async function loadAnimation(path: string): Promise<AnimationItem> {
-  const container = document.getElementById('lottie') as HTMLCanvasElement || document.createElement("div");
-
+export async function loadAnimation(path: string, container: HTMLElement): Promise<AnimationItem> {
   try {
     const response = await fetch(path);
     const data = await response.json();

@@ -35,6 +35,7 @@ export async function extractFramesFromVideo(video: HTMLVideoElement): Promise<I
         // console.count();
         // console.log(currentTime);
         video.currentTime = currentTime;
+        // eslint-disable-next-line
         await new Promise(r => seekResolve = r);
         c.drawImage(video, 0, 0);
         canvasFrames.push(c.getImageData(0, 0, w, h))

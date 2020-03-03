@@ -10,7 +10,7 @@ export function createAudio(videoPath: string) {
   // connect our video element's output to the stream
   track.connect(dest);
   // output to our headphones
-  track.connect(audioContext.destination);
+  // track.connect(audioContext.destination);
 
-  return { audioElement, audioStream: dest.stream };
+  return { audioElement, audioStream: dest.stream, audioContext };
 }
