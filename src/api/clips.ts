@@ -1,4 +1,4 @@
-import { firestore } from "../support/firebaseUtils";
+import { firestore } from "../utils/firebaseUtils";
 
 const collection = firestore.collection("clips");
 

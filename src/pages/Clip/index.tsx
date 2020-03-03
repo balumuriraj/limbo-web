@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import VideoItem from "../../components/VideoItem"
+import VideoItem from "../../components/VideoItem";
+import Loading from "../../components/Loading"
 import { useParams } from 'react-router-dom';
 import { getClip } from '../../api/clips';
 import "./styles.scss";
@@ -39,7 +40,9 @@ function Clip() {
     <div className="container">
       <div className="block">
         {
-          !loading ? <VideoItem videoUrl={clip.videoUrl} animationUrl={clip.animationUrl} width={clip.width} height={clip.height} /> : null
+          loading ?
+            <Loading width={clip.height} height={clip.height} /> :
+            <VideoItem videoUrl={clip.videoUrl} animationUrl={clip.animationUrl} width={clip.width} height={clip.height} />
         }
       </div>
     </div>
