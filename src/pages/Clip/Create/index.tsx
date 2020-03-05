@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Video from "../../../components/Video";
 import Loading from "../../../components/Loading"
 import { useParams } from 'react-router-dom';
-import { getClip } from '../../../api/clips';
+import { getClip } from '../../../api/firestore/clips';
 import "./styles.scss";
 
 function Create() {
@@ -42,7 +42,7 @@ function Create() {
         {
           loading ?
             <Loading width={clip.height} height={clip.height} /> :
-            <Video videoUrl={clip.videoUrl} animationUrl={clip.animationUrl} width={clip.width} height={clip.height} />
+            <Video clip={{ id, ...clip }} />
         }
       </div>
     </div>

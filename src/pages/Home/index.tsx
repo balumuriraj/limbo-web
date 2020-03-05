@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import "./styles.scss";
-import { getClips } from "../../api/clips";
+import { getClips } from "../../api/firestore/clips";
 import { Link } from 'react-router-dom';
 
 function Home() {

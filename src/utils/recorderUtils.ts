@@ -1,7 +1,5 @@
 import { createVideo } from "./videoUtils";
 
-const type = 'video/webm';
-
 export function getMediaRecorder(canvas: HTMLCanvasElement, audioStream: MediaStream) {
   const stream: MediaStream = (canvas as any).captureStream();
   const audioTrack = audioStream.getAudioTracks()[0];
@@ -9,20 +7,17 @@ export function getMediaRecorder(canvas: HTMLCanvasElement, audioStream: MediaSt
 
   // console.log('Started stream capture from canvas element: ', stream);
   
-  return new MediaRecorder(stream, { mimeType: type });
+  return new MediaRecorder(stream, { mimeType: 'video/webm' });
 }
 
-export function playBlob(recordedBlobs: Blob[], container: HTMLElement) {
-  const superBuffer = new Blob(recordedBlobs);
-  const url = URL.createObjectURL(superBuffer);
+export function playBlob(blob: Blob, container: HTMLElement) {
+  const url = URL.createObjectURL(blob);
   const video = createVideo(url);
   video.controls = true;
   container.appendChild(video);
 }
 
-export function downloadBlob(recordedBlobs: Blob[]) {
-  // console.log("recordedBlobs.length: ", recordedBlobs.length);
-  const blob = new Blob(recordedBlobs, { type });
+export function downloadBlob(blob: Blob) {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.style.display = 'none';

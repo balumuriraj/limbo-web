@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Loading from "../../components/Loading"
 import { useParams, Link } from 'react-router-dom';
-import { getClip } from '../../api/clips';
+import { getClip } from '../../api/firestore/clips';
 import "./styles.scss";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlay, faVolumeUp, faExpand, faPause } from '@fortawesome/free-solid-svg-icons'
